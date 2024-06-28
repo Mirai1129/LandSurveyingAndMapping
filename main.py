@@ -26,10 +26,14 @@ def read_csv_files(region_code):
         data = pd.read_csv(file_path, skiprows=1)
         print(data.head())
 
+    # TODO 讀取縣市土地檔案裡的鄉鎮市區以及地號
+
+    # TODO 利用縣市以及鄉鎮市區讀取 land_code.csv 的地段代碼
+
+    # TODO 抓取地號代碼（爬蟲）
+
 
 def main() -> None:
-    # print(get_region_code("新竹縣"))
-    # print(town_code_data['段'])
     read_csv_files("j")
 
 
