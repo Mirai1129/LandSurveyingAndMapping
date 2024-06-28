@@ -1,0 +1,10 @@
+# folders
+.idea/
+
+opendatas/test
+api documents/
+
+# files
+*.zip
+*_lvr_land_a.csv
+
