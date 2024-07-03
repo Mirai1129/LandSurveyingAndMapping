@@ -3,12 +3,17 @@ import re
 
 import pandas as pd
 
-from modules import CODE_TO_REGION
+# region_code 與縣市名稱的對應表
+region_mapping = {
+    'j': '新竹縣',
+    'a': '台北市',
+    # 可以根據需要添加更多的對應
+}
 
 
 def get_county_name(region_code):
     """將 region_code 轉換為縣市名稱"""
-    return CODE_TO_REGION.get(region_code, "未知地區")
+    return region_mapping.get(region_code, "未知地區")
 
 
 def list_matching_files(directory='opendata/lands'):
@@ -73,8 +78,16 @@ def read_csv_files(region_code, directory='opendata/lands'):
     if matching_file in all_files:
         file_path = os.path.join(directory, matching_file)
         print(f"Reading file: {file_path}")
-        # 使用 pandas 來讀取 CSV 檔案
-        df = pd.read_csv(file_path, skiprows=1)
+
+        # 使用 pandas 來讀取 CSV 檔案，這樣可以確保第一行正確作為標頭
+        df = pd.read_csv(file_path)
+
+        # 確認第一行是否符合預期，並作為列名
+        first_row = df.iloc[0]
+        df.columns = first_row
+
+        # 再次讀取檔案，跳過第一行，以獲得正確的資料
+        df = pd.read_csv(file_path, header=1)
 
         # 選取需要的欄位
         selected_columns = ['The villages and towns urban district',
@@ -82,6 +95,9 @@ def read_csv_files(region_code, directory='opendata/lands'):
         if not all(col in df.columns for col in selected_columns):
             print(f"Some of the required columns are missing in the file: {file_path}")
             return None
+
+        origin_df = pd.read_csv(file_path)
+        print(origin_df.iloc[:0])
 
         result_df = df.copy()
         result_df['land_code'] = region_code
@@ -158,45 +174,43 @@ def main():
 
     print(f"Found matching region codes: {matching_region_codes}")
 
-    for region_code in matching_region_codes:
+    original_filename = f"j_lvr_land_a.csv"
+    land_data_df = read_csv_files("j")
 
-        original_filename = f"{region_code}_lvr_land_a.csv"
-        land_data_df = read_csv_files(region_code)
+    if land_data_df is not None:
+        all_results = []
 
-        if land_data_df is not None:
-            all_results = []
+        for index, row in land_data_df.iterrows():
+            land_name = row['land_name']
+            region_name = row['region_name']
+            section = row['section']
+            sub_section = row['sub_section']
 
-            for index, row in land_data_df.iterrows():
-                land_name = row['land_name']
-                region_name = row['region_name']
-                section = row['section']
-                sub_section = row['sub_section']
+            code = find_towncode(land_name, region_name, section, sub_section)
+            if code:
+                print(
+                    f"Found code for {land_name}, {region_name}, section: {section}, sub-section: {sub_section}: {code}")
 
-                code = find_towncode(land_name, region_name, section, sub_section)
-                if code:
-                    print(
-                        f"Found code for {land_name}, {region_name}, section: {section}, sub-section: {sub_section}: {code}")
+            all_results.append({
+                'land_code': "j",
+                'land_name': land_name,
+                'region_name': region_name,
+                'section': section,
+                'sub_section': sub_section,
+                'land_serial_number': row['land_serial_number'],
+                'towncode': code
+            })
 
-                all_results.append({
-                    'land_code': region_code,
-                    'land_name': land_name,
-                    'region_name': region_name,
-                    'section': section,
-                    'sub_section': sub_section,
-                    'land_serial_number': row['land_serial_number'],
-                    'towncode': code
-                })
+        # 如果有結果，合併原本的資料和新增的內容，然後保存到 CSV
+        if all_results:
+            result_df = pd.DataFrame(all_results)
 
-            # 如果有結果，合併原本的資料和新增的內容，然後保存到 CSV
-            if all_results:
-                result_df = pd.DataFrame(all_results)
+            # 合併原本的資料和新增的內容
+            combined_df = pd.concat([land_data_df, result_df], axis=1)
 
-                # 合併原本的資料和新增的內容
-                combined_df = pd.concat([land_data_df, result_df], axis=1)
-
-                save_results_to_csv(combined_df, original_filename)
-            else:
-                print(f"No results to save for j")
+            save_results_to_csv(combined_df, original_filename)
+        else:
+            print(f"No results to save for j")
 
 
 if __name__ == "__main__":

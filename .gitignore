@@ -3,6 +3,8 @@
 
 opendatas/test
 api documents/
+opendata/
+output/
 
 # files
 *.zip
