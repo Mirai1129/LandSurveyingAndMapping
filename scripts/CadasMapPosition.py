@@ -55,16 +55,18 @@ class CadasMapPosition:
         try:
             root = ET.fromstring(xml_data)
             position = {
-                '代表點X': root.find('.//repX').text,
-                '代表點Y': root.find('.//repY').text,
-                '左下X': root.find('.//ldX').text,
-                '左下Y': root.find('.//ldY').text,
-                '右上X': root.find('.//rtX').text,
-                '右上Y': root.find('.//rtY').text
+                'repX': root.find('.//repX').text,
+                'repY': root.find('.//repY').text,
+                'ldX': root.find('.//ldX').text,
+                'ldY': root.find('.//ldY').text,
+                'rtX': root.find('.//rtX').text,
+                'rtY': root.find('.//rtY').text
             }
             return position
         except ET.ParseError as e:
             raise Exception(f"解析 XML 出錯：{e}")
+        except AttributeError:
+            return None
 
 
 def main():
@@ -74,7 +76,7 @@ def main():
     cad_map_position = CadasMapPosition()
 
     # 設定查詢參數
-    cad_map_position.set_parameters('B', '0012', '00010000')
+    cad_map_position.set_parameters('A', '0037', '01020000')
 
     # 獲取地籍位置數據
     position_data = cad_map_position.fetch_position()

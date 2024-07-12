@@ -2,6 +2,7 @@ import time
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotInteractableException
+from selenium.webdriver import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -76,6 +77,7 @@ class EasymapCrawler:
             section_input_box = self.driver.find_element(By.XPATH, '//*[@id="land_section_text"]')
             section_input_box.clear()
             section_input_box.send_keys(section_number)
+            section_input_box.send_keys(Keys.ENTER)
 
         except TimeoutException:
             print(f"Timed out waiting for the section input box to be clickable.")
@@ -113,21 +115,28 @@ class EasymapCrawler:
         Get land number
         :return: land_number
         """
-        land_number = self.driver.find_element(By.XPATH, '//*[@id="LANDtab"]/table/tbody/tr[4]/td')
-        return land_number.text
+        try:
+            land_number = self.driver.find_element(By.XPATH, '//*[@id="LANDtab"]/table/tbody/tr[4]/td')
+            return land_number.text
+        except NoSuchElementException:
+            self.driver.refresh()
 
     def run_process_flow_to_get_land_number(self, city_name: str, township_name: str, section_number: str,
                                             land_number: str) -> str:
         try:
-            self.open_driver()
+            # self.open_driver()
             self.select_city(city_name)
             self.select_township(township_name)
             self.fill_section_number(section_number)
             self.fill_land_number(land_number)
             self.click_search_button()
-            return self.get_land_number()
-        finally:
-            self.close_driver()
+            result = self.get_land_number()
+            self.driver.refresh()
+            return result
+        except Exception as e:
+            print(e)
+        # finally:
+        #     self.close_driver()
 
     def close_driver(self) -> None:
         self.driver.quit()
@@ -137,10 +146,10 @@ def main() -> None:
     crawler = EasymapCrawler()
 
     try:
-        city_name = "新竹縣"
-        township_name = "竹北市"
-        section_number = "0452"
-        land_number = "905"
+        city_name = "臺北市"
+        township_name = "萬華區"
+        section_number = "0037"
+        land_number = "102"
 
         land_number_found = crawler.run_process_flow_to_get_land_number(city_name, township_name, section_number,
                                                                         land_number)

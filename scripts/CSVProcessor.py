@@ -79,7 +79,10 @@ class CSVProcessor:
             matching_rows = matching_rows[matching_rows['小段'] == sub_section]
 
         if not matching_rows.empty:
-            return matching_rows['代碼'].values[0]
+            towncode = matching_rows['代碼'].values[0]
+            towncode_item = towncode.item()
+            formatted_num = '{:04d}'.format(towncode_item)
+            return formatted_num
         else:
             print(
                 f"No matching towncode found for land: {land_name}, region: {region_name}, section: {section}, sub-section: {sub_section}.")
