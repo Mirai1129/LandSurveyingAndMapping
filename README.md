@@ -1,6 +1,6 @@
 # 地籍資料處理器
 
-本項目用於處理包含地籍資訊的 CSV 檔案，通過網路爬蟲和 API 請求獲取額外的資料，並將更新後的資料輸出到新的 CSV 檔案中。
+本項目用於處理包含地籍資訊的 CSV 檔案，通過網路爬蟲和 API 請求獲取農地經緯度的資料，並將更新後的資料輸出到新的 CSV 檔案中。
 
 ## 專案結構
 
@@ -25,7 +25,11 @@
    - 請至 [土地段名代碼暨詮釋資料查詢系統](https://lisp.land.moi.gov.tw/MMS/MMSpage.aspx#gobox02) 選取全國並下載
    - 將「土地段名代碼暨詮釋資料查詢系統」CSV 檔案解壓縮至 `opendata/towncode` 中
 
-3. **運行程式**
+3. **申請 API 使用資格**
+   這個專案使用到 [國土測繪圖資服務雲](https://maps.nlsc.gov.tw/) 的 CAD-001 之 API。
+   -  請參考 [國土測繪圖資服務雲申請文件](https://maps.nlsc.gov.tw/S09SOA/homePage.action?Language=ZH) 並完成申請。
+
+4. **運行程式**
     cd 到本專案資料夾中並執行 `main.py`
     ```shell
     python main.py
