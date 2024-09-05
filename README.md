@@ -29,7 +29,7 @@
       並下載。
       - 將「不動產成交案件」CSV 檔案解壓縮至 `opendata/lands` 中。
 
-   3. 請至 [土地段名代碼暨詮釋資料查詢系統](https://lisp.land.moi.gov.tw/MMS/MMSpage.aspx#gobox02)選取全國並下載。
+   3. 請至 [土地段名代碼暨詮釋資料查詢系統](https://lisp.land.moi.gov.tw/MMS/MMSpage.aspx#gobox02) 選取全國並下載。
       - 將「土地段名代碼暨詮釋資料查詢系統」CSV 檔案解壓縮至 `opendata/towncode` 中。
 
 3. **申請 API 使用資格**
